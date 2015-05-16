@@ -30,7 +30,6 @@ extractData <- function(path, feature_file) {
     # Take the indicies and arrange them in order to use in the next select
     ordered <- 
         rbind (f.mean, f.std) %>% 
-        select (V1) %>% 
         arrange (V1)
     indicies <- ordered$V1
 
@@ -41,9 +40,7 @@ extractData <- function(path, feature_file) {
     # Extract and return the columns indicated by the previous 
     # feature calculation
     data <- select (d, indicies)
-    # FIXME: This may need to use the text names instead of the numbers
-    # TODO: 
-    names (data) <- indicies
+    names (data) <- ordered$V2
     data
 }
 
@@ -57,6 +54,8 @@ extractActivity <- function(path, labels_file) {
 
     trace (sprintf ("Reading labels     : '%s'", labels_file))
     lab <- read.table (labels_file, header=FALSE)
+
+    # Map an index to the name in the activity list
     actName <- function (idx) { lab[idx,2] }
 
     trace (sprintf ("Reading activites  : '%s'", path))
@@ -67,9 +66,12 @@ extractActivity <- function(path, labels_file) {
 #
 # Extract the subject ID for the tests.
 # [path] Relative path to the subject_test.txt file
-# return: A vecotr of numeric IDs
+# return: A vector of IDs
 extractSubjects <- function(path) {
-    # TODO mutate the data to add new column (subject) based on these results
+
+    trace (sprintf ("Reading subjects: '%s'", path))
+    subs <- read.table (path, header=FALSE)
+    subs[,1]
 }
 
 # Set up the locations of the data we will process
