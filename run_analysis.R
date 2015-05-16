@@ -41,6 +41,8 @@ extractData <- function(path, feature_file) {
     # Extract and return the columns indicated by the previous 
     # feature calculation
     data <- select (d, indicies)
+    # FIXME: This may need to use the text names instead of the numbers
+    # TODO: 
     names (data) <- indicies
     data
 }
@@ -52,7 +54,14 @@ extractData <- function(path, feature_file) {
 # [lables_file] Relative path to the activity_labels.txt file
 # return: a vector of factors
 extractActivity <- function(path, labels_file) {
-    # TODO mutate the data to add new column (activity) based on these results
+
+    trace (sprintf ("Reading labels     : '%s'", labels_file))
+    lab <- read.table (labels_file, header=FALSE)
+    actName <- function (idx) { lab[idx,2] }
+
+    trace (sprintf ("Reading activites  : '%s'", path))
+    act <- read.table (path, header=FALSE)
+    as.factor (actName (act[,1]))
 }
 
 #
@@ -63,6 +72,22 @@ extractSubjects <- function(path) {
     # TODO mutate the data to add new column (subject) based on these results
 }
 
-# Directory containing the data from the tests.
+# Set up the locations of the data we will process
 dataLocation <- 'UCI HAR Dataset'
+features <- sprintf ("%s/features.txt", dataLocation)
+labels <- sprintf ("%s/activity_labels.txt", dataLocation)
+data.test <- sprintf ("%s/test/X_test.txt", dataLocation)
+data.train <- sprintf ("%s/train/X_test.txt", dataLocation)
+activity.test <- sprintf ("%s/test/y_test.txt", dataLocation)
+activity.train <- sprintf ("%s/train/y_test.txt", dataLocation)
+subject.test <- sprintf ("%s/test/subject_test.txt", dataLocation)
+subject.train <- sprintf ("%s/train/subject_test.txt", dataLocation)
+
+# Start with the test data
+trace ("Processing test data")
+data <- extractData (data.test, features)
+activity <- extractActivity (activity.test, labels)
+data <- mutate (data, activity = activity)
+subjects <- extractSubjects (subject.test)
+data <- mutate (data, subject = subjects)
 
