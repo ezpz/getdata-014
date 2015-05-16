@@ -1,6 +1,5 @@
 
 library (dplyr)
-library (tidyr)
 
 doDebug <- TRUE
 
@@ -79,17 +78,36 @@ dataLocation <- 'UCI HAR Dataset'
 features <- sprintf ("%s/features.txt", dataLocation)
 labels <- sprintf ("%s/activity_labels.txt", dataLocation)
 data.test <- sprintf ("%s/test/X_test.txt", dataLocation)
-data.train <- sprintf ("%s/train/X_test.txt", dataLocation)
+data.train <- sprintf ("%s/train/X_train.txt", dataLocation)
 activity.test <- sprintf ("%s/test/y_test.txt", dataLocation)
-activity.train <- sprintf ("%s/train/y_test.txt", dataLocation)
+activity.train <- sprintf ("%s/train/y_train.txt", dataLocation)
 subject.test <- sprintf ("%s/test/subject_test.txt", dataLocation)
-subject.train <- sprintf ("%s/train/subject_test.txt", dataLocation)
+subject.train <- sprintf ("%s/train/subject_train.txt", dataLocation)
 
 # Start with the test data
 trace ("Processing test data")
-data <- extractData (data.test, features)
+dtest <- extractData (data.test, features)
 activity <- extractActivity (activity.test, labels)
-data <- mutate (data, activity = activity)
+dtest <- mutate (dtest, activity = activity)
 subjects <- extractSubjects (subject.test)
-data <- mutate (data, subject = subjects)
+dtest <- mutate (dtest, subject = subjects)
 
+# Then training data
+trace ("Processing training data")
+dtrain <- extractData (data.train, features)
+activity <- extractActivity (activity.train, labels)
+dtrain <- mutate (dtrain, activity = activity)
+subjects <- extractSubjects (subject.train)
+dtrain <- mutate (dtrain, subject = subjects)
+
+# Combine all data, group by activity and subject, with means of each variable
+tidy <- 
+    rbind (dtest, dtrain) %>%
+    group_by (subject, activity) %>%
+    summarise_each (funs(mean))
+
+# Print the data as summarised by tbl_df
+print(tidy)
+
+# To save the output as required by the assignment 
+# write.table(tidy, file="tidy.txt", row.names=FALSE) 
