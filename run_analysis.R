@@ -103,7 +103,7 @@ dtrain <- mutate (dtrain, subject = subjects)
 # Combine all data, group by activity and subject, with means of each variable
 tidy <- 
     rbind (dtest, dtrain) %>%
-    group_by (subject, activity) %>%
+    group_by (activity, subject) %>%
     summarise_each (funs(mean))
 
 # Print the data as summarised by tbl_df
