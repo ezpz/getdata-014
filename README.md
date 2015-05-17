@@ -50,7 +50,5 @@ In either of the {test|train} directories these are the data:
 
     Inertial Signals/*:
         The original unprocessed data. I believe this is informational only
-        and can be excluded from the processing. R on a 32-bit system will 
-        not be capable of loading all this data @ nine 6M and nine 15M files 
-        for the test and training data, respectively.
+        and can be excluded from the processing.
         
